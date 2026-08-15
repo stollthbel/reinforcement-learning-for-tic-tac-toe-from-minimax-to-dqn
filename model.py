@@ -790,8 +790,35 @@ def compute_batched_outcome_stats(episode_outcomes, batch_size):
         "draw_rate": draw_rates,
     }
 
-# Step 55 - self_play_episode (not yet solved)
-# TODO: implement
+# Step 55 - self_play_episode
+def self_play_episode(q_table, alpha, gamma, epsilon, rng):
+    """Run one self-play episode and return final_status and a list of transitions."""
+    # TODO: loop until terminal, picking actions with episode_agent_pick_action and applying them
+    board, current_player = episode_reset_game()
+
+    transitions = []
+
+    while True:
+        state_key, action_index = episode_agent_pick_action(q_table, board, current_player, epsilon, rng)
+        transition = episode_apply_action(board, action_index, current_player, current_player)
+        transitions.append({
+            "state_key": state_key,
+            "action": action_index,
+            "reward": transition["reward"],
+            "next_board": transition["next_board"],
+            "done": transition["done"],
+            "player": current_player,
+        })
+
+        board = transition["next_board"]
+        current_player = transition["next_player"]
+
+        if transition['done']:
+            break
+    
+    return {'final_status': transition['status'],
+            'transitions': transitions
+            }
 
 # Step 56 - flip_board_perspective (not yet solved)
 # TODO: implement
